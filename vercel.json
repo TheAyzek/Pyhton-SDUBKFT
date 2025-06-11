@@ -13,8 +13,7 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "sqlite+aiosqlite:///:memory:",
-    "VERCEL": "true"
+    "DATABASE_URL": "postgresql+asyncpg://neondb_owner:npg_QE4pDwguqz6J@ep-frosty-brook-a8pr9o13-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
   },
   "functions": {
     "main.py": {

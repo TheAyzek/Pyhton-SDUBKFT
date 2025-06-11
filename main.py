@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from typing import List
 import json
 import logging
+import ssl
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -20,19 +21,23 @@ load_dotenv()
 # Database configuration for serverless environment
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./frpdb.db")
 
-# For Vercel/serverless environments, use in-memory SQLite
-if os.getenv("VERCEL") or "vercel" in DATABASE_URL.lower():
-    DATABASE_URL = "sqlite+aiosqlite:///:memory:"
-    logger.info("Using in-memory SQLite for serverless environment")
+# For PostgreSQL (Neon), use the provided connection string
+if "postgresql" in DATABASE_URL:
+    logger.info("Using PostgreSQL database")
+    connect_args = {"ssl": ssl.create_default_context()}
+else:
+    # Fallback to SQLite for local development
+    logger.info("Using SQLite database for local development")
+    connect_args = {"check_same_thread": False}
 
 try:
     engine = create_async_engine(
         DATABASE_URL, 
         echo=False,  # Set to False for production
-        connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+        connect_args=connect_args
     )
     async_session = async_sessionmaker(engine, expire_on_commit=False)
-    logger.info(f"Database engine created successfully with URL: {DATABASE_URL}")
+    logger.info(f"Database engine created successfully with URL: {DATABASE_URL.split('@')[1] if '@' in DATABASE_URL else DATABASE_URL}")
 except Exception as e:
     logger.error(f"Failed to create database engine: {e}")
     raise
