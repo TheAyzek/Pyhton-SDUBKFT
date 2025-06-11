@@ -4,8 +4,8 @@ import axios from "axios";
 
 // API URL'ini environment'a göre ayarla
 const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? "http://localhost:5000/api"
-  : "https://sdu-bkft-backend.vercel.app/api";
+  ? "http://localhost:8000"
+  : "https://pyhton-sdubkft.onrender.com";
 
 const AdminLayout = () => {
   const [loggedIn, setLoggedIn] = useState(false);

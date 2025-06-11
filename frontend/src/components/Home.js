@@ -6,8 +6,8 @@ import ApplicationForm from "./systems/ApplicationForm";
 
 // API URL'ini port 5000'e değiştiriyorum
 const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? "http://localhost:5000/api"
-  : "https://sdu-bkft-backend.vercel.app/api";
+  ? "http://localhost:8000"
+  : "https://pyhton-sdubkft.onrender.com";
 
 const Home = () => {
   const { t } = useTranslation();

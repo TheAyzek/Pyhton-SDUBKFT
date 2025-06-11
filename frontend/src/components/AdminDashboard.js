@@ -4,8 +4,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? "http://localhost:5000/api"
-  : "https://sdu-bkft-backend.vercel.app/api";
+  ? "http://localhost:8000"
+  : "https://pyhton-sdubkft.onrender.com";
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);

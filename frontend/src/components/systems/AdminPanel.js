@@ -3,8 +3,8 @@ import axios from "axios";
 
 // API URL'ini environment'a göre ayarla
 const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? "http://localhost:5000"
-  : "https://sdu-bkft-backend.vercel.app";
+  ? "http://localhost:8000"
+  : "https://pyhton-sdubkft.onrender.com";
 
 const defaultField = { label: "", type: "text", options: [], maxResponses: [] };
 const defaultText = { title: "", content: "", order: 0 };
