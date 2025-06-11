@@ -12,8 +12,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# API URL
-API_URL = "http://localhost:8000"
+# API URL - Render deployment
+API_URL = "https://pyhton-sdubkft.onrender.com"
 
 # Session state başlatma
 if 'admin_logged_in' not in st.session_state:
