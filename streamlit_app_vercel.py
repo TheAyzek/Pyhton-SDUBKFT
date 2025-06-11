@@ -12,8 +12,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# API URL
-API_URL = "http://localhost:8000"
+# Vercel API URL - deployment sonrası güncellenecek
+API_URL = st.secrets.get("API_URL", "https://your-vercel-app.vercel.app")
 
 # Session state başlatma
 if 'admin_logged_in' not in st.session_state:
@@ -23,6 +23,14 @@ def main():
     # Sidebar
     st.sidebar.title("🎲 SDU BKFT")
     st.sidebar.markdown("---")
+    
+    # API URL ayarlama
+    with st.sidebar.expander("🔧 API Ayarları"):
+        custom_api_url = st.text_input("API URL", value=API_URL)
+        if st.button("URL Güncelle"):
+            st.session_state.api_url = custom_api_url
+            st.success("API URL güncellendi!")
+            st.rerun()
     
     # Navigasyon
     page = st.sidebar.selectbox(
@@ -46,6 +54,9 @@ def main():
     elif page == "🎵 Spotify Player":
         show_spotify_player()
 
+def get_api_url():
+    return st.session_state.get("api_url", API_URL)
+
 def show_home_page():
     st.title("🎲 SDU BKFT FRP Sistemleri")
     st.markdown("---")
@@ -65,24 +76,23 @@ def show_home_page():
     with col2:
         st.subheader("📊 İstatistikler")
         try:
+            api_url = get_api_url()
             # API'den veri çekme
-            response = requests.get(f"{API_URL}/admins/", timeout=5)
-            st.write(f"Admin API Response: {response.status_code}")
+            response = requests.get(f"{api_url}/admins/", timeout=10)
             if response.status_code == 200:
                 admins = response.json()
                 st.metric("Admin Sayısı", len(admins))
             else:
                 st.error(f"Admin API Error: {response.status_code}")
             
-            response = requests.get(f"{API_URL}/applications/", timeout=5)
-            st.write(f"Application API Response: {response.status_code}")
+            response = requests.get(f"{api_url}/applications/", timeout=10)
             if response.status_code == 200:
                 applications = response.json()
                 st.metric("Başvuru Sayısı", len(applications))
             else:
                 st.error(f"Application API Error: {response.status_code}")
         except requests.exceptions.ConnectionError:
-            st.error("❌ Backend bağlantısı kurulamadı - Backend çalışıyor mu?")
+            st.error("❌ Backend bağlantısı kurulamadı - API URL'i kontrol edin")
         except requests.exceptions.Timeout:
             st.error("⏰ Backend yanıt vermiyor - Timeout")
         except Exception as e:
@@ -102,7 +112,8 @@ def show_application_form():
     
     # Form alanlarını getir
     try:
-        response = requests.get(f"{API_URL}/form_fields/")
+        api_url = get_api_url()
+        response = requests.get(f"{api_url}/form_fields/", timeout=10)
         if response.status_code == 200:
             fields = response.json()
             
@@ -147,8 +158,9 @@ def show_application_form():
                     # Başvuruyu gönder
                     try:
                         response = requests.post(
-                            f"{API_URL}/applications/",
-                            json={"answers": answers}
+                            f"{api_url}/applications/",
+                            json={"answers": answers},
+                            timeout=10
                         )
                         
                         if response.status_code == 200:
@@ -188,11 +200,13 @@ def show_admin_panel():
     
     admin_tab = st.tabs(["👥 Adminler", "📝 Form Alanları", "📋 Başvurular", "➕ Yeni Admin"])
     
+    api_url = get_api_url()
+    
     # Adminler tab
     with admin_tab[0]:
         st.subheader("👥 Admin Listesi")
         try:
-            response = requests.get(f"{API_URL}/admins/")
+            response = requests.get(f"{api_url}/admins/", timeout=10)
             if response.status_code == 200:
                 admins = response.json()
                 if admins:
@@ -230,7 +244,7 @@ def show_admin_panel():
                             "options": options if field_type == "select" else None
                         }
                         
-                        response = requests.post(f"{API_URL}/form_fields/", json=field_data)
+                        response = requests.post(f"{api_url}/form_fields/", json=field_data, timeout=10)
                         if response.status_code == 200:
                             st.success("Form alanı eklendi!")
                             st.rerun()
@@ -241,7 +255,7 @@ def show_admin_panel():
         
         # Mevcut form alanları
         try:
-            response = requests.get(f"{API_URL}/form_fields/")
+            response = requests.get(f"{api_url}/form_fields/", timeout=10)
             if response.status_code == 200:
                 fields = response.json()
                 if fields:
@@ -256,7 +270,7 @@ def show_admin_panel():
     with admin_tab[2]:
         st.subheader("📋 Başvuru Listesi")
         try:
-            response = requests.get(f"{API_URL}/applications/")
+            response = requests.get(f"{api_url}/applications/", timeout=10)
             if response.status_code == 200:
                 applications = response.json()
                 if applications:
@@ -284,7 +298,7 @@ def show_admin_panel():
                         "noPassword": no_password
                     }
                     
-                    response = requests.post(f"{API_URL}/admins/", json=admin_data)
+                    response = requests.post(f"{api_url}/admins/", json=admin_data, timeout=10)
                     if response.status_code == 200:
                         st.success("Admin eklendi!")
                     else:

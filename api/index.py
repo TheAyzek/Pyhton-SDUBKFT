@@ -11,8 +11,9 @@ import json
 
 load_dotenv()
 
+# Vercel için SQLite dosya yolu
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./frpdb.db")
-engine = create_async_engine(DATABASE_URL, echo=True, connect_args={"check_same_thread": False})
+engine = create_async_engine(DATABASE_URL, echo=False, connect_args={"check_same_thread": False})
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 app = FastAPI(title="SDU BKFT FRP Sistemleri API")
@@ -20,7 +21,7 @@ app = FastAPI(title="SDU BKFT FRP Sistemleri API")
 # CORS ayarları
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Güvenlik için production'da spesifik domainler belirtin
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,8 +38,9 @@ async def get_session() -> AsyncSession:
 
 @app.get("/")
 async def root():
-    return {"message": "SDU BKFT FRP Sistemleri API - Python FastAPI + PostgreSQL"}
+    return {"message": "SDU BKFT FRP Sistemleri API - Vercel Deployment"}
 
+# Admin modelleri
 class AdminCreate(BaseModel):
     username: str
     password: str = None
@@ -66,7 +68,7 @@ async def list_admins(session: AsyncSession = Depends(get_session)):
     admins = result.scalars().all()
     return admins
 
-# --- PendingAdmin ---
+# PendingAdmin modelleri
 class PendingAdminCreate(BaseModel):
     name: str
     username: str
@@ -100,7 +102,7 @@ async def list_pending_admins(session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(PendingAdmin))
     return result.scalars().all()
 
-# --- FormField ---
+# FormField modelleri
 class FormFieldCreate(BaseModel):
     label: str
     type: str = "text"
@@ -134,7 +136,6 @@ async def create_form_field(field: FormFieldCreate, session: AsyncSession = Depe
     session.add(db_obj)
     await session.commit()
     await session.refresh(db_obj)
-    # JSON alanları deserialize et
     return FormFieldRead(
         id=db_obj.id,
         label=db_obj.label,
@@ -149,7 +150,6 @@ async def create_form_field(field: FormFieldCreate, session: AsyncSession = Depe
 async def list_form_fields(session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(FormField))
     fields = result.scalars().all()
-    # JSON alanları deserialize et
     return [FormFieldRead(
         id=f.id,
         label=f.label,
@@ -160,7 +160,7 @@ async def list_form_fields(session: AsyncSession = Depends(get_session)):
         order=f.order
     ) for f in fields]
 
-# --- FormText ---
+# FormText modelleri
 class FormTextCreate(BaseModel):
     title: str
     content: str
@@ -194,7 +194,7 @@ async def list_form_texts(session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(FormText))
     return result.scalars().all()
 
-# --- Application ---
+# Application modelleri
 class ApplicationAnswer(BaseModel):
     field: int
     value: str = None
