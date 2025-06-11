@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy[asyncio]
+aiosqlite
+alembic
+pydantic
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv 

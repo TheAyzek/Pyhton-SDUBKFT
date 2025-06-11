@@ -1,0 +1,11 @@
+backend/
+tests/
+scripts/
+*.md
+.git/
+.devcontainer/
+Dockerfile
+docker-compose.yml
+requirements.txt
+nginx.conf
+entrypoint.sh 
