@@ -1,4 +1,4 @@
-const logger = require('./logger');
+const { logger } = require('./logger');
 
 // Custom error class
 class AppError extends Error {
