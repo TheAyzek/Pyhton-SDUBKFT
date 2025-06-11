@@ -376,8 +376,4 @@ async def list_applications(session: AsyncSession = Depends(get_session)):
         raise HTTPException(status_code=500, detail="Failed to list applications")
     except Exception as e:
         logger.error(f"Unexpected error listing applications: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+        raise HTTPException(status_code=500, detail="Internal server error") 

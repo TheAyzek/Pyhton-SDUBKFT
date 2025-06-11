@@ -1,23 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "main.py",
-      "use": "@vercel/python"
-    }
-  ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "main.py"
+      "dest": "api/index.py"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "postgresql+asyncpg://neondb_owner:npg_QE4pDwguqz6J@ep-frosty-brook-a8pr9o13-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
-  },
-  "functions": {
-    "main.py": {
-      "maxDuration": 30
-    }
-  }
+  ]
 } 
